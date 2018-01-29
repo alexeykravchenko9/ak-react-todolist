@@ -1,8 +1,4 @@
-# Lectrum React intensive boilerplate
+# TODO-List of Lectrum Reac Homework 
 
-## In order to start a project follow these steps:
-
-+ `git clone git@github.com:Lectrum/react-intensive-boilerplate.git`
-+ `cd react-intensive-boilerplate`
-+ `yarn` or `npm i`
-+ `yarn start` or `npm start`
+## based on Lectrum React intensive boilerplate
+ 
