@@ -1,0 +1,43 @@
+
+.todoAppForm{
+    width: 50%;
+    form{
+        border-radius: 40px;
+        background: #f5f8f9;
+        max-width: 223px;
+        width: 100%;
+        padding: 9px 19px;
+        float: right;
+        display: flex;
+        justify-content: space-between;
+        input, button{
+            outline: none;
+            font-family: 'Poppins', sans-serif;
+        }
+        input[type="text"]{
+            border: 0;
+            width: 100%;
+            font-weight: 300;
+            background: none;
+            font-size: 14px;
+            &::-webkit-input-placeholder{
+                color: #aebcc0;
+            }
+        }
+
+        button{
+            background: none;
+            border: none;
+            padding: 1px;
+            cursor: pointer;
+            transition:all .3s ease-in;
+            img{
+                width: 18px;
+                height: 18px;
+            }
+            &:hover{
+                opacity: 0.6;
+            }
+        }
+    }
+}

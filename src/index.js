@@ -4,8 +4,9 @@ import ReactDOM from 'react-dom';
 
 // Instruments
 import './theme/reset.css';
+import './theme/general';
 
-// App
-import App from './containers/App';
 
-ReactDOM.render(<App />, document.getElementById('root'));
+import TodoApp from './containers/TodoApp';
+
+ReactDOM.render(<TodoApp />, document.getElementById('root'));
