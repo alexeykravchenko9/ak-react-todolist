@@ -5,28 +5,70 @@ import PropTypes from 'prop-types';
 import Styles from './styles';
 
 export default class Task extends Component {
+    constructor () {
+        super();
+
+        this.handleChangeCompleted = ::this._handleChangeCompleted;
+    }
+
     static propTypes = {
-        content: PropTypes.string.isRequired,
-        priority: PropTypes.bool
+        id:           PropTypes.number.isRequired,
+        content:      PropTypes.string.isRequired,
+        priority:     PropTypes.bool,
+        completed:    PropTypes.bool,
+        completeTask: PropTypes.func
     };
 
+    static defaultProps = {
+        completeTask: ''
+    }
 
+    state = {
+        completedStatus: ''
+    };
+
+    _handleChangeCompleted (event) {
+        event.target
+        if( this.state.completedStatus == 'checked' ){
+            this.setState({ completedStatus: '' });
+            this.props.completeTask('');
+
+        } else {
+            this.setState({ completedStatus: 'checked' });
+            this.props.completeTask(this.props.id);
+        }
+
+
+
+
+    }
 
     render () {
 
-        const { content, status } = this.props;
+        const { content, priority, completed, id } = this.props;
+
         let classes;
-        if (status == true){
-            classes = [Styles.pinned, Styles.buttonArea__pin ].join(' ');
+
+        if (priority) {
+            classes = [Styles.pinned, Styles.buttonArea__pin].join(' ');
         } else {
             classes = Styles.buttonArea__pin;
         }
+
+        let taskStatus;
+
+        if (completed) {
+            taskStatus = 'checked';
+        } else {
+            taskStatus = '';
+        }
+
         return (
             <section className = { Styles.Task }>
                 <form action = ''>
 
-                    <label className = { Styles.container } htmlFor = 'taskStatus'>
-                        <input id = 'taskStatus' type = 'checkbox' />
+                    <label className = { Styles.container } htmlFor = { id } >
+                        <input id = { id } onChange = { this.handleChangeCompleted } checked = { this.state.completedStatus } type = 'checkbox' />
                         <span className = { Styles.checkmark } />
                     </label>
 

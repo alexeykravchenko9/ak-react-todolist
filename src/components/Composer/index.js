@@ -14,11 +14,13 @@ export default class Composer extends Component {
 
         this.handleWriteTask = ::this._handleWriteTask;
         this.handleFormAction = ::this._handleFormAction;
+        this.handleDoneAll = ::this._handleDoneAll;
     }
 
     state = {
         taskText: '',
-        priority: false
+        priority: false,
+        completed: false
     };
 
     _handleWriteTask (event) {
@@ -27,9 +29,13 @@ export default class Composer extends Component {
         });
     }
 
+    _handleDoneAll(){
+
+    }
+
     _handleFormAction(event){
         event.preventDefault();
-        this.props.createTask( this.state.taskText, this.state.priority );
+        this.props.createTask( this.state.taskText, this.state.priority, this.state.completed );
 
         this.setState({
             taskText: ''
@@ -46,7 +52,7 @@ export default class Composer extends Component {
                 <hr />
                 <form action="" className = { Styles.doneAll }>
                     <label className = { Styles.container } htmlFor = 'doneAll'>
-                        <input id = 'doneAll' type = 'checkbox' />
+                        <input id = 'doneAll' type = 'checkbox' onChange = { this.handleDoneAll  } />
                         <span className = { Styles.checkmark } />
                         Done All
                     </label>
@@ -61,6 +67,7 @@ export default class Composer extends Component {
                         type = 'text'
                         value = { taskText }
                         onChange = { this.handleWriteTask }
+                        required
                     />
                     <input type = 'submit' value = { 'Add Task' } />
                 </form>
