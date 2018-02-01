@@ -1,21 +1,4 @@
-// import dataTasks from './data.json';
 
-{ /*
-export const addTaskJSON = (priority, status, text) => {
-    let obj = {
-        id: getUniqueID(10),
-        priority,
-        status,
-        text
-    };
-
-    fs.writeFile(dataTasks, JSON.stringify(obj), (err) => {
-        if (err) throw new Error(`Data weren't added to the JSON file`);
-        console.log('Data was added!');
-    });
-
-}
-*/ }
 
 export const getUniqueID = (length = 15) => {
     if (typeof length !== 'number') {

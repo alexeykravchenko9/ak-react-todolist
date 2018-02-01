@@ -98,6 +98,7 @@
         display: inline-block;
         vertical-align: top;
         text-align: right;
+        position: relative;
         input{
             outline: none;
             font-family: 'Poppins', sans-serif;
@@ -111,10 +112,37 @@
             font-size: 14px;
             max-width: 257px;
             width: 100%;
+            transition: all .1s ease-in;
             &::-webkit-input-placeholder{
                 color: #aebcc0;
             }
         }
+
+        input[type="text"].emptyValidation{
+            border: 1px #fbaf6d solid;
+            padding: 14px 29px;
+        }
+
+        .Validation{
+
+            color: #fbaf6d;
+            font-size: 12px;
+            left: 0;
+            bottom: -25px;
+            padding-left: 52px;
+            text-align: left;
+            position: absolute;
+            transition: all .5s ease;
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .Validation.Show{
+            opacity:1;
+            visibility: visible;
+        }
+
+
 
         input[type="submit"]{
             border-radius: 40px;

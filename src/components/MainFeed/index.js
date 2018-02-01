@@ -3,8 +3,7 @@ import PropTypes from 'prop-types';
 
 
 // Instruments
-import { addTaskJSON } from '../../helpers/index';
-import fs from 'file-system';
+
 // const jsonfile = require('jsonfile');
 
 
@@ -19,7 +18,11 @@ export default class MainFeed extends Component {
         super();
 
         this.createTask = ::this._createTask;
+        this.getTasks = ::this._getTasks;
+        this.removeTask = ::this._removeTask;
+        this.editTask = ::this._editTask;
         this.completeTask = ::this._completeTask;
+        this.unCompleteTask = ::this._unCompleteTask;
 
     }
 
@@ -27,73 +30,164 @@ export default class MainFeed extends Component {
         tasks: []
     };
 
+    async componentWillMount(){
 
-    _createTask (priority, status, text) {
+       await this.getTasks();
+
+       this.interval = setInterval( () => this.getTasks(), 100);
+
+    }
+
+    componentWillUnMount(){
+        clearInterval(this.interval);
+    }
+
+
+    async _createTask (priority, status, content) {
+
         const dateId = new Date();
-        let obj = {
-            id: dateId.getTime(),
+        const obj = {
+            'id': dateId.getTime(),
             priority,
             status,
-            text
+            content
         };
+        const response = await fetch(
+            'http://localhost:3004/tasks',
+            {
+                method:  'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(obj)
+            }
+        );
 
+        if (response.status !== 201) {
+            throw new Error('Failed to create new task');
+        }
 
-        // addTaskJSON(priority, status, text);
+        // const { tasks: db_tasks } = await response.json();
+        const inArr = [];
 
-        fs.writeFileSync('./data.json', JSON.stringify(obj), (err) => {
-            if (err) throw new Error(`Data weren't added to the JSON file`);
-            console.log('Data was added!');
-        });
+        inArr.push(await response.json());
 
+        // this.setState(({ tasks }) => ({
+        //     tasks: [...tasks, ...inArr]
+        // }));
 
-        let inc_arr;
+        console.log('_createPost', this.state.tasks);
 
+    }
 
-        inc_arr = this.state.tasks;
-
-        // console.log(data);
-        inc_arr.push([text, priority, status, dateId.getTime()]);
-
-        this.setState(({ tasks }) => ({
-            tasks: inc_arr
+    async _removeTask (id) {
+        const response = await fetch(`http://localhost:3004/tasks/${id}`,
+            { method: 'DELETE' });
+        this.setState( ({tasks}) => ({
+           tasks: tasks.filter( (item) => item.id !== id )
         }));
     }
 
-    _completeTask (id) {
-        let incArr;
 
-        incArr = this.state.tasks;
+    async _getTasks () {
+        const response = await fetch('http://localhost:3004/tasks')
+            .then( (response) => (response.json()) )
+            .then( (json) => {
+                // console.log('getTasks', json[0]);
+                const inCome = json;
+                let sortedDESC = [];
 
-        // this.setState( ({ tasks }) => ({
-        //     tasks: tasks.filter( (item) => ( item[3] !== id ) )
-        // }));
+                for( let i = 0; i < inCome.length; i++){
+                    sortedDESC.push( inCome[i] );
+                };
+
+                this.setState({ tasks: sortedDESC.reverse() })
+            } );
+    }
+
+    async _editTask (id, priority, status, content) {
+        const response = await fetch(`http://localhost:3004/tasks/${id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-type' : 'application/json'
+            },
+            body: JSON.stringify({
+                id,
+                priority,
+                status,
+                content
+            })
+        });
+
     }
 
 
+    async _completeTask (id, priority, status, content) {
+        const response = await fetch(`http://localhost:3004/tasks/${id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-type' : 'application/json'
+            },
+            body: JSON.stringify({
+                id,
+                priority,
+                status: 'checked',
+                content
+            })
+
+        })
+            .then( (response) => response.json())
+            .then( (json) => {
+
+            });
+
+    }
+
+    async _unCompleteTask (id, priority, status, content) {
+        const response = await fetch(`http://localhost:3004/tasks/${id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-type' : 'application/json'
+            },
+            body: JSON.stringify({
+                id,
+                priority,
+                status: '',
+                content
+            })
+
+        })
+            .then( (response) => response.json())
+            .then( (json) => {
+
+
+            });
+
+    }
+
+
+
+
+    // noinspection JSAnnotator
     render () {
         const { tasks } = this.state;
 
         console.log('check state', tasks);
-       console.log('check FS var', );
 
-        // const dataJSON = fs.readFileSync('./libraries.json');
-        // console.log('check JSONFILE var', dataJSON)
 
-        const allTasks = tasks.map((item, id) => (
+        const allTasks = tasks.map((item) => (
 
             <Task
-                key = { id }
-                content = { item[0] }
-                priority = { item[1] }
-                completed = { item[2] }
-                id = { item[3] }
+                key = { item.id }
+                { ...item }
+                editTask = { this.editTask }
                 completeTask = { this.completeTask }
+                unCompleteTask = { this.unCompleteTask }
+                removeTask = { this.removeTask }
             />
 
         ));
 
-        console.log('check allTasks', allTasks);
-        // setInterval( () => { this.forceUpdate() }, 1000);
 
         return (
             <section className = { Styles.MainFeed }>

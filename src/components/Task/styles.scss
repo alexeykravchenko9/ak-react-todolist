@@ -6,14 +6,53 @@
     font-size: 16px;
     display: inline-block;
     vertical-align: top;
+
     textarea{
         font-family: 'Poppins', sans-serif;
         border: 0;
         background: none;
         font-size: 16px;
         color: #313b3d;
+        height:0;
+        resize: none;
+        overflow: hidden;
         display: none;
+        outline: none;
+        width: 100%;
+        margin-left: -10px;
+        margin-top: -7px;
+        background: #fdfeff;
+        padding: 10px;
+        max-height: 50px;
+        min-height: 50px;
     }
+
+    textarea.editingActive{
+        display: block;
+        margin-bottom: 20px;
+    }
+
+    .Validation{
+        color: #fbaf6d;
+        font-size: 12px;
+        left: 0;
+        bottom: 12px;
+        padding-left: 0px;
+        text-align: left;
+        position: absolute;
+        transition: all .5s ease;
+        opacity: 0;
+        visibility: hidden;
+        height: 0;
+    }
+
+    .Validation.Show{
+        opacity:1;
+        visibility: visible;
+
+    }
+
+
 
     .TaskText{
         font-size: 16px;
@@ -24,8 +63,17 @@
         vertical-align: top;
         line-height: 150%;
         padding-right: 5%;
+        position: relative;
     }
 
+    .completedTask .TaskText{
+        text-decoration: line-through;
+        color: #c3c3c3;
+    }
+
+    .ContentNone{
+        display: none;
+    }
 
     .container {
         display: inline-block;
@@ -85,6 +133,9 @@
         visibility: visible;
     }
 
+
+
+
     /* Style the checkmark/indicator */
     .container .checkmark:after {
         background: url("../../theme/assets/icon_mark@2x.png") no-repeat;
@@ -106,6 +157,7 @@
             height: 20px;
             text-indent: -9999px;
             border: none;
+            outline: none;
             margin-right: 10px;
             cursor: pointer;
             &:last-child{
