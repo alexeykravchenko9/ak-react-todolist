@@ -3,14 +3,13 @@ import PropTypes from 'prop-types';
 
 
 // Instruments
-
-// const jsonfile = require('jsonfile');
-
+import SearchForm from '../SearchForm';
+import Task from '../Task';
+import Composer from '../Composer';
 
 // Styles
 import Styles from './styles';
-import Task from '../Task';
-import Composer from '../Composer';
+
 
 export default class MainFeed extends Component {
 
@@ -23,25 +22,48 @@ export default class MainFeed extends Component {
         this.editTask = ::this._editTask;
         this.completeTask = ::this._completeTask;
         this.unCompleteTask = ::this._unCompleteTask;
-
+        // this.querySearch = ::this._querySearch;
     }
 
     state = {
-        tasks: []
+        tasks:         [],
+        tasksNotFound: false,
+        searchQuery:   ''
     };
 
-    async componentWillMount(){
+    async componentWillMount () {
 
-       await this.getTasks();
+        // await this.getTasks( this.state.searchQuery );
 
-       this.interval = setInterval( () => this.getTasks(), 100);
+        // this.interval = setInterval(() => this.getTasks(this.state.searchQuery), 5000);
 
     }
 
-    componentWillUnMount(){
+    componentWillUnMount () {
         clearInterval(this.interval);
     }
 
+
+    // _querySearch(query){
+    //
+    //     const { tasks } = this.state;
+    //     let taskItem;
+    //
+    //     if ( query !== '' ){
+    //         const searchArr = tasks.filter( (item ) => {
+    //             if ( item.content.indexOf( query ) !== -1){
+    //                 return item;
+    //             };
+    //         });
+    //
+    //         ( searchArr.length == 0 )
+    //             ? this.setState({ tasksNotFound: true, tasks: [] })
+    //             : this.setState({ tasks: searchArr });
+    //
+    //     } else {
+    //         this.getTasks();
+    //     }
+    // }
 
     async _createTask (priority, status, content) {
 
@@ -67,14 +89,9 @@ export default class MainFeed extends Component {
             throw new Error('Failed to create new task');
         }
 
-        // const { tasks: db_tasks } = await response.json();
         const inArr = [];
 
         inArr.push(await response.json());
-
-        // this.setState(({ tasks }) => ({
-        //     tasks: [...tasks, ...inArr]
-        // }));
 
         console.log('_createPost', this.state.tasks);
 
@@ -83,33 +100,53 @@ export default class MainFeed extends Component {
     async _removeTask (id) {
         const response = await fetch(`http://localhost:3004/tasks/${id}`,
             { method: 'DELETE' });
-        this.setState( ({tasks}) => ({
-           tasks: tasks.filter( (item) => item.id !== id )
+
+        this.setState(({ tasks }) => ({
+            tasks: tasks.filter((item) => item.id !== id)
         }));
     }
 
 
-    async _getTasks () {
-        const response = await fetch('http://localhost:3004/tasks')
-            .then( (response) => (response.json()) )
-            .then( (json) => {
-                // console.log('getTasks', json[0]);
-                const inCome = json;
-                let sortedDESC = [];
+    async _getTasks (searchKey) {
+        this.setState({ searchQuery: searchKey });
 
-                for( let i = 0; i < inCome.length; i++){
-                    sortedDESC.push( inCome[i] );
-                };
+        const response = await fetch('http://localhost:3004/tasks');
 
-                this.setState({ tasks: sortedDESC.reverse() })
-            } );
+        const inCome =  await response.json();
+        const sortedDESC = [];
+
+        for (let i = 0; i < inCome.length; i++) {
+            sortedDESC.push(inCome[i]);
+        }
+
+        console.log('then promise', sortedDESC);
+
+
+        if (searchKey !== '') {
+
+            const searchArr = sortedDESC.filter((item) => {
+                if (item.content.indexOf(searchKey) !== -1) {
+                    return item;
+                }
+            });
+
+            searchArr.length == 0
+                ? this.setState({ tasksNotFound: true, tasks: []})
+                : this.setState({ tasks: searchArr, tasksNotFound: false });
+
+
+        } else {
+            console.log('else', 'get_Tasks');
+            this.setState({ tasks: sortedDESC.reverse() });
+        }
+
     }
 
     async _editTask (id, priority, status, content) {
         const response = await fetch(`http://localhost:3004/tasks/${id}`, {
-            method: 'PUT',
+            method:  'PUT',
             headers: {
-                'Content-type' : 'application/json'
+                'Content-type': 'application/json'
             },
             body: JSON.stringify({
                 id,
@@ -124,9 +161,9 @@ export default class MainFeed extends Component {
 
     async _completeTask (id, priority, status, content) {
         const response = await fetch(`http://localhost:3004/tasks/${id}`, {
-            method: 'PUT',
+            method:  'PUT',
             headers: {
-                'Content-type' : 'application/json'
+                'Content-type': 'application/json'
             },
             body: JSON.stringify({
                 id,
@@ -136,8 +173,8 @@ export default class MainFeed extends Component {
             })
 
         })
-            .then( (response) => response.json())
-            .then( (json) => {
+            .then((response) => response.json())
+            .then((json) => {
 
             });
 
@@ -145,9 +182,9 @@ export default class MainFeed extends Component {
 
     async _unCompleteTask (id, priority, status, content) {
         const response = await fetch(`http://localhost:3004/tasks/${id}`, {
-            method: 'PUT',
+            method:  'PUT',
             headers: {
-                'Content-type' : 'application/json'
+                'Content-type': 'application/json'
             },
             body: JSON.stringify({
                 id,
@@ -157,8 +194,8 @@ export default class MainFeed extends Component {
             })
 
         })
-            .then( (response) => response.json())
-            .then( (json) => {
+            .then((response) => response.json())
+            .then((json) => {
 
 
             });
@@ -166,14 +203,16 @@ export default class MainFeed extends Component {
     }
 
 
-
-
     // noinspection JSAnnotator
     render () {
-        const { tasks } = this.state;
+        const { tasks, tasksNotFound } = this.state;
+        let noTasksMessages;
 
-        console.log('check state', tasks);
-
+        if (tasksNotFound) {
+            noTasksMessages = <span className = { Styles.tasksNotFound } >There aren't any tasks of your request</span>;
+        } else {
+            noTasksMessages = '';
+        }
 
         const allTasks = tasks.map((item) => (
 
@@ -190,14 +229,29 @@ export default class MainFeed extends Component {
 
 
         return (
-            <section className = { Styles.MainFeed }>
+            <section>
 
-                <div className = { Styles.TaskList }>
-                    { allTasks }
+
+                <div className = { Styles.todoApp_header }>
+
+                    <h1>To Do List</h1>
+
+                    <SearchForm getTasks = { this.getTasks } />
+
                 </div>
 
+                <section className = { Styles.MainFeed }>
 
-                <Composer createTask = { this.createTask } />
+                    <div className = { Styles.TaskList }>
+                        { allTasks }
+                        { noTasksMessages }
+                    </div>
+
+                    <Composer createTask = { this.createTask } />
+
+                </section>
+
+
             </section>
         );
     }
