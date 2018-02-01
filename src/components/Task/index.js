@@ -41,13 +41,15 @@ export default class Task extends Component {
 
     _handleChangeCompleted (event) {
 
-        if (this.props.status == 'checked') {
+        const { id, priority, status, content } = this.props;
 
-            this.props.unCompleteTask(this.props.id, this.props.priority, this.props.status, this.props.content);
+        if (status == 'checked') {
+
+            this.props.unCompleteTask(id, priority, status, content);
 
         } else {
 
-            this.props.completeTask(this.props.id, this.props.priority, this.props.status, this.props.content);
+            this.props.completeTask(id, priority, status, content);
 
         }
     }

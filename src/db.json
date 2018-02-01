@@ -21,20 +21,20 @@
     {
       "id": 1517503708080,
       "priority": false,
-      "status": "",
+      "status": "checked",
       "content": "four sound task"
     },
     {
       "id": 1517503714007,
       "priority": false,
-      "status": "",
+      "status": "checked",
       "content": "five music task edited"
     },
     {
       "id": 1517503723837,
       "priority": false,
-      "status": "",
-      "content": "six text task one more\n"
+      "status": "checked",
+      "content": "six text task one moreedited"
     }
   ]
 }

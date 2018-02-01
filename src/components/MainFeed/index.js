@@ -12,6 +12,9 @@ import Styles from './styles';
 
 
 export default class MainFeed extends Component {
+    static contextTypes = {
+        api: PropTypes.string.isRequired
+    };
 
     constructor () {
         super();
@@ -22,8 +25,9 @@ export default class MainFeed extends Component {
         this.editTask = ::this._editTask;
         this.completeTask = ::this._completeTask;
         this.unCompleteTask = ::this._unCompleteTask;
-        // this.querySearch = ::this._querySearch;
+
     }
+
 
     state = {
         tasks:         [],
@@ -35,7 +39,7 @@ export default class MainFeed extends Component {
 
         // await this.getTasks( this.state.searchQuery );
 
-        // this.interval = setInterval(() => this.getTasks(this.state.searchQuery), 5000);
+        this.interval = setInterval(() => this.getTasks(this.state.searchQuery), 500);
 
     }
 
@@ -44,29 +48,8 @@ export default class MainFeed extends Component {
     }
 
 
-    // _querySearch(query){
-    //
-    //     const { tasks } = this.state;
-    //     let taskItem;
-    //
-    //     if ( query !== '' ){
-    //         const searchArr = tasks.filter( (item ) => {
-    //             if ( item.content.indexOf( query ) !== -1){
-    //                 return item;
-    //             };
-    //         });
-    //
-    //         ( searchArr.length == 0 )
-    //             ? this.setState({ tasksNotFound: true, tasks: [] })
-    //             : this.setState({ tasks: searchArr });
-    //
-    //     } else {
-    //         this.getTasks();
-    //     }
-    // }
-
     async _createTask (priority, status, content) {
-
+        const { api } = this.context;
         const dateId = new Date();
         const obj = {
             'id': dateId.getTime(),
@@ -74,8 +57,7 @@ export default class MainFeed extends Component {
             status,
             content
         };
-        const response = await fetch(
-            'http://localhost:3004/tasks',
+        const response = await fetch(api,
             {
                 method:  'POST',
                 headers: {
@@ -98,7 +80,8 @@ export default class MainFeed extends Component {
     }
 
     async _removeTask (id) {
-        const response = await fetch(`http://localhost:3004/tasks/${id}`,
+        const { api } = this.context;
+        const response = await fetch(`${api}/${id}`,
             { method: 'DELETE' });
 
         this.setState(({ tasks }) => ({
@@ -108,9 +91,11 @@ export default class MainFeed extends Component {
 
 
     async _getTasks (searchKey) {
+        const { api } = this.context;
+        console.log('get get get ', api);
         this.setState({ searchQuery: searchKey });
 
-        const response = await fetch('http://localhost:3004/tasks');
+        const response = await fetch(api);
 
         const inCome =  await response.json();
         const sortedDESC = [];
@@ -143,7 +128,8 @@ export default class MainFeed extends Component {
     }
 
     async _editTask (id, priority, status, content) {
-        const response = await fetch(`http://localhost:3004/tasks/${id}`, {
+        const { api } = this.context;
+        const response = await fetch(`${api}/${id}`, {
             method:  'PUT',
             headers: {
                 'Content-type': 'application/json'
@@ -160,7 +146,8 @@ export default class MainFeed extends Component {
 
 
     async _completeTask (id, priority, status, content) {
-        const response = await fetch(`http://localhost:3004/tasks/${id}`, {
+        const { api } = this.context;
+        const response = await fetch(`${api}/${id}`, {
             method:  'PUT',
             headers: {
                 'Content-type': 'application/json'
@@ -181,7 +168,8 @@ export default class MainFeed extends Component {
     }
 
     async _unCompleteTask (id, priority, status, content) {
-        const response = await fetch(`http://localhost:3004/tasks/${id}`, {
+        const { api } = this.context;
+        const response = await fetch(`${api}/${id}`, {
             method:  'PUT',
             headers: {
                 'Content-type': 'application/json'
@@ -207,6 +195,8 @@ export default class MainFeed extends Component {
     render () {
         const { tasks, tasksNotFound } = this.state;
         let noTasksMessages;
+
+        console.log('check contex', this.context);
 
         if (tasksNotFound) {
             noTasksMessages = <span className = { Styles.tasksNotFound } >There aren't any tasks of your request</span>;
