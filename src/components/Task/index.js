@@ -5,26 +5,15 @@ import PropTypes from 'prop-types';
 import Styles from './styles';
 
 export default class Task extends Component {
-    constructor () {
-        super();
-
-        this.handleChangeCompleted = ::this._handleChangeCompleted;
-        this.handleRemoveTask = ::this._handleRemoveTask;
-        this.handleEditTask = ::this._handleEditTask;
-        this.handleEditingProcess = ::this._handleEditingProcess;
-
-
-    }
-
     static propTypes = {
-        id:             PropTypes.number.isRequired,
         content:        PropTypes.string.isRequired,
-        priority:       PropTypes.bool,
-        status:         PropTypes.string,
+        id:             PropTypes.number.isRequired,
         completeTask:   PropTypes.func,
-        unCompleteTask: PropTypes.func,
+        editTask:       PropTypes.func,
+        priority:       PropTypes.bool,
         removeTask:     PropTypes.func,
-        editTask:       PropTypes.func
+        status:         PropTypes.string,
+        unCompleteTask: PropTypes.func
     };
 
     static defaultProps = {
@@ -32,18 +21,26 @@ export default class Task extends Component {
         maxValueText: false
     };
 
+    constructor () {
+        super();
+
+        this.handleChangeCompleted = ::this._handleChangeCompleted;
+        this.handleRemoveTask = ::this._handleRemoveTask;
+        this.handleEditTask = ::this._handleEditTask;
+        this.handleEditingProcess = ::this._handleEditingProcess;
+    }
 
 
     state = {
-        editingTask:'',
+        editingTask:  '',
         contentState: ''
     };
 
-    _handleChangeCompleted (event) {
+    _handleChangeCompleted () {
 
         const { id, priority, status, content } = this.props;
 
-        if (status == 'checked') {
+        if (status === 'checked') {
 
             this.props.unCompleteTask(id, priority, status, content);
 
@@ -59,38 +56,33 @@ export default class Task extends Component {
         const { editingTask, contentState } = this.state;
         const { id, priority, status, content } = this.props;
 
-        if (!editingTask ) {
+        if (!editingTask) {
             this.setState({
-                editingTask: true,
+                editingTask:  true,
                 contentState: content
             });
+        } else if (contentState !== '') {
+            this.props.editTask(id, priority, status, contentState);
+            this.setState({
+                editingTask:  false,
+                contentState: ''
+            });
         } else {
-            if(contentState !== ''){
-                this.props.editTask(id, priority, status, contentState);
-                this.setState({
-                    editingTask: false,
-                    contentState: ''
-                });
-            } else {
-                this.setState({
-                    editingTask: true
+            this.setState({
+                editingTask: true
 
-                });
-            }
-
-
-
+            });
         }
     }
 
-    _handleEditingProcess(event){
-        if ( event.target.value.length < 30) {
+    _handleEditingProcess (event) {
+        if (event.target.value.length < 30) {
             this.setState({
                 contentState: event.target.value
             });
         }
 
-        if( event.target.value.length >= 30 ){
+        if (event.target.value.length >= 30) {
             this.setState({
                 maxValueText: true
             });
@@ -99,8 +91,6 @@ export default class Task extends Component {
                 maxValueText: false
             });
         }
-
-
 
 
     }
@@ -114,45 +104,31 @@ export default class Task extends Component {
 
 
     render () {
+        let classes = Styles.buttonArea__pin;
+        let classComl = '';
+        let editingClass = '';
+        let contentNone = '';
+        let validationMessage = Styles.Validation;
 
         const { content, priority, status, id } = this.props;
         const { contentState, maxValueText, editingTask } = this.state;
 
-
-        let classes;
-
         if (priority) {
             classes = [Styles.pinned, Styles.buttonArea__pin].join(' ');
-        } else {
-            classes = Styles.buttonArea__pin;
         }
-        let classComl;
 
-        if (status == 'checked') {
+        if (status === 'checked') {
             classComl = Styles.completedTask;
-        } else {
-            classComl = '';
         }
-
-        let editingClass, contentNone;
 
         if (editingTask) {
             editingClass = Styles.editingActive;
             contentNone = Styles.ContentNone;
-        } else {
-            editingClass = '';
-            contentNone = '';
         }
 
-        let validationMessage;
-
-        if ( maxValueText ) {
-            validationMessage = [ Styles.Validation, Styles.Show ].join(' ');
-        } else {
-            validationMessage = Styles.Validation;
+        if (maxValueText && editingTask) {
+            validationMessage = [Styles.Validation, Styles.Show].join(' ');
         }
-
-
 
         return (
             <section className = { Styles.Task }>
@@ -160,10 +136,10 @@ export default class Task extends Component {
 
                     <label className = { Styles.container } htmlFor = { id } >
                         <input
-                            id = { id }
-                            onChange = { this.handleChangeCompleted }
                             checked = { status }
+                            id = { id }
                             type = 'checkbox'
+                            onChange = { this.handleChangeCompleted }
                         />
                         <span className = { Styles.checkmark } />
                     </label>
@@ -171,17 +147,16 @@ export default class Task extends Component {
                     <div className = { Styles.TaskText } >
                         <div className = { contentNone } >{ content }</div>
                         <textarea
+                            className = { editingClass }
                             id = ''
                             name = 'taskText'
                             value = { contentState }
-                            className = { editingClass }
                             onChange = { this.handleEditingProcess }
                         />
                         <span className = { validationMessage } >Max length 30 characters</span>
                     </div>
                     <div className = { Styles.buttonArea }>
                         <button
-                            // className = { [Styles.pinned, Styles.buttonArea__pin ].join(' ')}
                             className = { classes }
                             title = 'Pin'
                         />

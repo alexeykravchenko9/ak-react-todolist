@@ -37,9 +37,7 @@ export default class MainFeed extends Component {
 
     async componentWillMount () {
 
-        // await this.getTasks( this.state.searchQuery );
-
-        this.interval = setInterval(() => this.getTasks(this.state.searchQuery), 500);
+        this.interval = await setInterval(() => this.getTasks(this.state.searchQuery), 500);
 
     }
 
@@ -81,7 +79,8 @@ export default class MainFeed extends Component {
 
     async _removeTask (id) {
         const { api } = this.context;
-        const response = await fetch(`${api}/${id}`,
+
+        await fetch(`${api}/${id}`,
             { method: 'DELETE' });
 
         this.setState(({ tasks }) => ({
@@ -92,7 +91,7 @@ export default class MainFeed extends Component {
 
     async _getTasks (searchKey) {
         const { api } = this.context;
-        console.log('get get get ', api);
+
         this.setState({ searchQuery: searchKey });
 
         const response = await fetch(api);
@@ -104,24 +103,19 @@ export default class MainFeed extends Component {
             sortedDESC.push(inCome[i]);
         }
 
-        console.log('then promise', sortedDESC);
+        if (searchKey) {
 
-
-        if (searchKey !== '') {
-
-            const searchArr = sortedDESC.filter((item) => {
+            const searchArr = sortedDESC.filter( (item) => {
                 if (item.content.indexOf(searchKey) !== -1) {
                     return item;
                 }
             });
 
-            searchArr.length == 0
+            searchArr.length === 0
                 ? this.setState({ tasksNotFound: true, tasks: []})
                 : this.setState({ tasks: searchArr, tasksNotFound: false });
 
-
         } else {
-            console.log('else', 'get_Tasks');
             this.setState({ tasks: sortedDESC.reverse() });
         }
 
@@ -129,7 +123,8 @@ export default class MainFeed extends Component {
 
     async _editTask (id, priority, status, content) {
         const { api } = this.context;
-        const response = await fetch(`${api}/${id}`, {
+
+        await fetch(`${api}/${id}`, {
             method:  'PUT',
             headers: {
                 'Content-type': 'application/json'
@@ -147,7 +142,8 @@ export default class MainFeed extends Component {
 
     async _completeTask (id, priority, status, content) {
         const { api } = this.context;
-        const response = await fetch(`${api}/${id}`, {
+
+        await fetch(`${api}/${id}`, {
             method:  'PUT',
             headers: {
                 'Content-type': 'application/json'
@@ -159,17 +155,14 @@ export default class MainFeed extends Component {
                 content
             })
 
-        })
-            .then((response) => response.json())
-            .then((json) => {
-
-            });
+        });
 
     }
 
     async _unCompleteTask (id, priority, status, content) {
         const { api } = this.context;
-        const response = await fetch(`${api}/${id}`, {
+
+        await fetch(`${api}/${id}`, {
             method:  'PUT',
             headers: {
                 'Content-type': 'application/json'
@@ -181,12 +174,7 @@ export default class MainFeed extends Component {
                 content
             })
 
-        })
-            .then((response) => response.json())
-            .then((json) => {
-
-
-            });
+        });
 
     }
 
@@ -194,12 +182,12 @@ export default class MainFeed extends Component {
     // noinspection JSAnnotator
     render () {
         const { tasks, tasksNotFound } = this.state;
-        let noTasksMessages;
+        let noTasksMessages  = '';
 
-        console.log('check contex', this.context);
+
 
         if (tasksNotFound) {
-            noTasksMessages = <span className = { Styles.tasksNotFound } >There aren't any tasks of your request</span>;
+            noTasksMessages = <span className = { Styles.tasksNotFound } >{`There aren't any tasks of your request`}</span>;
         } else {
             noTasksMessages = '';
         }
@@ -209,10 +197,10 @@ export default class MainFeed extends Component {
             <Task
                 key = { item.id }
                 { ...item }
-                editTask = { this.editTask }
                 completeTask = { this.completeTask }
-                unCompleteTask = { this.unCompleteTask }
+                editTask = { this.editTask }
                 removeTask = { this.removeTask }
+                unCompleteTask = { this.unCompleteTask }
             />
 
         ));

@@ -8,6 +8,9 @@ import imgIconSearch2x from '../../theme/assets/icon_search@2x.png';
 
 
 export default class SearchForm extends Component {
+    static propTypes = {
+        getTasks: PropType.func
+    };
     constructor () {
         super();
 
@@ -16,15 +19,12 @@ export default class SearchForm extends Component {
 
     }
 
-    static propTypes = {
-        getTasks: PropType.func
-    };
 
     state = {
         query: ''
     };
 
-    _handleSearchQuery(event){
+    _handleSearchQuery (event) {
 
 
         this.setState({
@@ -32,17 +32,17 @@ export default class SearchForm extends Component {
         });
 
 
-        if( event.target.value == ""){
+        if (event.target.value) {
             this.props.getTasks('');
         }
 
 
     }
 
-    _handleSubmitSearch(event){
+    _handleSubmitSearch (event) {
         event.preventDefault();
 
-        this.props.getTasks( this.state.query );
+        this.props.getTasks(this.state.query);
     }
 
     render () {
@@ -55,9 +55,9 @@ export default class SearchForm extends Component {
                 <form onSubmit = { this.handleSubmitSearch } >
                     <input
                         placeholder = { 'Search' }
-                        onChange = { this.handleSearchQuery }
                         type = 'text'
                         value = { query }
+                        onChange = { this.handleSearchQuery }
                     />
                     <button type = 'submit' value = { 'submit' } >
                         <img

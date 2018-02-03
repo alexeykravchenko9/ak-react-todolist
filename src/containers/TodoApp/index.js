@@ -6,22 +6,23 @@ import Styles from './styles';
 import MainFeed from '../../components/MainFeed';
 
 const globalOptions = {
-    api: 'http://localhost:3006/tasks'
-}
+    api: 'http://localhost:3003/tasks'
+};
 
 export default class TodoApp extends Component {
     static childContextTypes = {
-      api: PropTypes.string.isRequired
+        api: PropTypes.string.isRequired
     };
 
-    getChildContext (){
+    getChildContext () {
         return globalOptions;
     }
 
 
     render () {
 
-        console.log( globalOptions );
+        console.log(globalOptions);
+
         return (
             <section className = { Styles.todoApp }>
 

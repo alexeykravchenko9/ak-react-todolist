@@ -9,29 +9,29 @@ export default class Composer extends Component {
         createTask: PropTypes.func
     };
 
-    constructor (){
+    constructor () {
         super();
 
         this.handleWriteTask = ::this._handleWriteTask;
         this.handleFormAction = ::this._handleFormAction;
-        this.handleDoneAll = ::this._handleDoneAll;
+        // this.handleDoneAll = ::this._handleDoneAll;
     }
 
     state = {
-        taskText: '',
-        priority: false,
-        completed: '',
+        taskText:     '',
+        priority:     false,
+        completed:    '',
         maxValueText: false
     };
 
     _handleWriteTask (event) {
-        if ( event.target.value.length < 30) {
+        if (event.target.value.length < 30) {
             this.setState({
                 taskText: event.target.value
             });
         }
 
-        if( event.target.value.length >= 30 ){
+        if (event.target.value.length >= 30) {
             this.setState({
                 maxValueText: true
             });
@@ -41,19 +41,14 @@ export default class Composer extends Component {
             });
         }
 
-        console.log( event );
-
     }
 
-    _handleDoneAll(){
-
-    }
-
-    _handleFormAction(event){
+    _handleFormAction (event) {
         event.preventDefault();
+        const { taskText, priority, completed } = this.state;
 
-        if( this.state.taskText !== "" ){
-            this.props.createTask( this.state.priority,  this.state.completed, this.state.taskText );
+        if (taskText) {
+            this.props.createTask(priority, completed, taskText);
 
             this.setState({
                 taskText: ''
@@ -70,33 +65,29 @@ export default class Composer extends Component {
         }
 
 
-
     }
 
 
     render () {
         const { taskText, maxValueText } = this.state;
 
-        let validationMessage, emptyValidation;
+        let validationMessage = Styles.Validation;
+        let emptyValidation = '';
 
-        if ( maxValueText && taskText !== "" ) {
-            validationMessage = [ Styles.Validation, Styles.Show ].join(' ');
-        } else {
-            validationMessage = Styles.Validation;
+        if (maxValueText && taskText) {
+            validationMessage = [Styles.Validation, Styles.Show].join(' ');
         }
 
-        if ( taskText == "" && maxValueText == true){
+        if (taskText && maxValueText === true) {
             emptyValidation = Styles.emptyValidation;
-        } else {
-            emptyValidation = "";
         }
 
         return (
             <section className = { Styles.Composer }>
                 <hr />
-                <form action="" className = { Styles.doneAll }>
+                <form action = '' className = { Styles.doneAll }>
                     <label className = { Styles.container } htmlFor = 'doneAll'>
-                        <input id = 'doneAll' type = 'checkbox' onChange = { this.handleDoneAll  } />
+                        <input id = 'doneAll' type = 'checkbox' onChange = { this.handleDoneAll } />
                         <span className = { Styles.checkmark } />
                         Done All
                     </label>
@@ -104,14 +95,13 @@ export default class Composer extends Component {
 
                 <form
                     className = { Styles.ComposerForm }
-                    onSubmit = { this.handleFormAction }
-                >
+                    onSubmit = { this.handleFormAction }>
                     <input
+                        className = { emptyValidation }
                         placeholder = { 'Write here' }
                         type = 'text'
                         value = { taskText }
                         onChange = { this.handleWriteTask }
-                        className = { emptyValidation }
                     />
                     <span className = { validationMessage } >Max length 30 characters</span>
                     <input type = 'submit' value = { 'Add Task' } />
