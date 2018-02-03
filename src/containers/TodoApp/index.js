@@ -6,7 +6,7 @@ import Styles from './styles';
 import MainFeed from '../../components/MainFeed';
 
 const globalOptions = {
-    api: 'http://localhost:3003/tasks'
+    api: 'http://localhost:3007/tasks'
 };
 
 export default class TodoApp extends Component {

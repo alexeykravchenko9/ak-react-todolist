@@ -36,13 +36,14 @@ export default class MainFeed extends Component {
     };
 
     async componentWillMount () {
+        await this.getTasks(this.state.searchQuery);
 
-        this.interval = await setInterval(() => this.getTasks(this.state.searchQuery), 500);
 
+        // this.interval = await setInterval(() => this.getTasks(this.state.searchQuery), 500);
     }
 
     componentWillUnMount () {
-        clearInterval(this.interval);
+        // clearInterval(this.interval);
     }
 
 
@@ -73,7 +74,7 @@ export default class MainFeed extends Component {
 
         inArr.push(await response.json());
 
-        console.log('_createPost', this.state.tasks);
+        this.getTasks(this.state.searchQuery);
 
     }
 
@@ -86,8 +87,9 @@ export default class MainFeed extends Component {
         this.setState(({ tasks }) => ({
             tasks: tasks.filter((item) => item.id !== id)
         }));
-    }
 
+        this.getTasks(this.state.searchQuery);
+    }
 
     async _getTasks (searchKey) {
         const { api } = this.context;
@@ -105,11 +107,7 @@ export default class MainFeed extends Component {
 
         if (searchKey) {
 
-            const searchArr = sortedDESC.filter( (item) => {
-                if (item.content.indexOf(searchKey) !== -1) {
-                    return item;
-                }
-            });
+            const searchArr = sortedDESC.filter((item) => item.content.indexOf(searchKey) !== -1 ? item : '');
 
             searchArr.length === 0
                 ? this.setState({ tasksNotFound: true, tasks: []})
@@ -137,6 +135,9 @@ export default class MainFeed extends Component {
             })
         });
 
+        this.getTasks(this.state.searchQuery);
+
+
     }
 
 
@@ -157,6 +158,8 @@ export default class MainFeed extends Component {
 
         });
 
+        this.getTasks(this.state.searchQuery);
+
     }
 
     async _unCompleteTask (id, priority, status, content) {
@@ -176,6 +179,8 @@ export default class MainFeed extends Component {
 
         });
 
+        this.getTasks(this.state.searchQuery);
+
     }
 
 
@@ -183,7 +188,6 @@ export default class MainFeed extends Component {
     render () {
         const { tasks, tasksNotFound } = this.state;
         let noTasksMessages  = '';
-
 
 
         if (tasksNotFound) {
