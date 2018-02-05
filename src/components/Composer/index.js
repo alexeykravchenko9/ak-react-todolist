@@ -6,7 +6,8 @@ import Styles from './styles';
 
 export default class Composer extends Component {
     static propTypes = {
-        createTask: PropTypes.func
+        createTask:   PropTypes.func,
+        doneAllTasks: PropTypes.func
     };
 
     constructor () {
@@ -14,15 +15,41 @@ export default class Composer extends Component {
 
         this.handleWriteTask = ::this._handleWriteTask;
         this.handleFormAction = ::this._handleFormAction;
-        // this.handleDoneAll = ::this._handleDoneAll;
+        this.handleDoneAll = ::this._handleDoneAll;
     }
 
     state = {
-        taskText:     '',
-        priority:     false,
-        completed:    '',
-        maxValueText: false
+        taskText:      '',
+        priority:      false,
+        completed:     '',
+        maxValueText:  false,
+        doneAllStatus: ''
     };
+
+    _handleDoneAll () {
+
+        const { doneAllStatus } = this.state;
+
+
+        if (!doneAllStatus) {
+            this.setState({
+                doneAllStatus: 'checked'
+            });
+
+            this.props.doneAllTasks('doneActive');
+
+        } else {
+
+            this.setState({
+                doneAllStatus: ''
+            });
+
+            this.props.doneAllTasks('doneDisabled');
+
+        }
+
+
+    }
 
     _handleWriteTask (event) {
         if (event.target.value.length < 30) {
@@ -63,13 +90,13 @@ export default class Composer extends Component {
                 maxValueText: true
             });
         }
-
-
     }
 
 
     render () {
-        const { taskText, maxValueText } = this.state;
+        const { taskText, maxValueText, doneAllStatus } = this.state;
+
+        console.log(doneAllStatus);
 
         let validationMessage = Styles.Validation;
         let emptyValidation = '';

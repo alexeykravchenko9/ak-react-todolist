@@ -25,6 +25,7 @@ export default class MainFeed extends Component {
         this.editTask = ::this._editTask;
         this.completeTask = ::this._completeTask;
         this.unCompleteTask = ::this._unCompleteTask;
+        this.doneAllTasks = ::this._doneAllTasks;
 
     }
 
@@ -37,15 +38,7 @@ export default class MainFeed extends Component {
 
     async componentWillMount () {
         await this.getTasks(this.state.searchQuery);
-
-
-        // this.interval = await setInterval(() => this.getTasks(this.state.searchQuery), 500);
     }
-
-    componentWillUnMount () {
-        // clearInterval(this.interval);
-    }
-
 
     async _createTask (priority, status, content) {
         const { api } = this.context;
@@ -137,9 +130,34 @@ export default class MainFeed extends Component {
 
         this.getTasks(this.state.searchQuery);
 
-
     }
 
+    async _doneAllTasks (doneStatus) {
+        const { tasks } = this.state;
+
+        console.log(doneStatus, 'done status');
+
+
+        const responseDone = await tasks.forEach((item) => {
+            const { id, priority, status, content } = item;
+
+            if (doneStatus === 'doneActive') {
+
+                if (item.status !== 'checked') {
+
+                    this.completeTask(id, priority, status, content);
+                }
+
+            } else {
+                console.log('doneDisable', item);
+                this.unCompleteTask(id, priority, status, content);
+            }
+
+        });
+
+        setTimeout(responseDone, 1000);
+
+    }
 
     async _completeTask (id, priority, status, content) {
         const { api } = this.context;
@@ -157,10 +175,11 @@ export default class MainFeed extends Component {
             })
 
         });
-
+        console.log('completeTask has run');
         this.getTasks(this.state.searchQuery);
 
     }
+
 
     async _unCompleteTask (id, priority, status, content) {
         const { api } = this.context;
@@ -229,7 +248,7 @@ export default class MainFeed extends Component {
                         { noTasksMessages }
                     </div>
 
-                    <Composer createTask = { this.createTask } />
+                    <Composer createTask = { this.createTask } doneAllTasks = { this.doneAllTasks } />
 
                 </section>
 
