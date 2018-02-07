@@ -94,9 +94,9 @@ export default class Composer extends Component {
 
 
     render () {
-        const { taskText, maxValueText, doneAllStatus } = this.state;
+        const { taskText, maxValueText } = this.state;
 
-        console.log(doneAllStatus);
+
 
         let validationMessage = Styles.Validation;
         let emptyValidation = '';

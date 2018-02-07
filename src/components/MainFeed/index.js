@@ -23,10 +23,10 @@ export default class MainFeed extends Component {
         this.getTasks = ::this._getTasks;
         this.removeTask = ::this._removeTask;
         this.editTask = ::this._editTask;
+        this.pinTask = ::this._pinTask;
         this.completeTask = ::this._completeTask;
         this.unCompleteTask = ::this._unCompleteTask;
         this.doneAllTasks = ::this._doneAllTasks;
-
     }
 
 
@@ -112,11 +112,19 @@ export default class MainFeed extends Component {
 
     }
 
+    async _pinTask (id, priority) {
+
+        await this.editTask(id, priority);
+
+
+    }
+
+
     async _editTask (id, priority, status, content) {
         const { api } = this.context;
 
         await fetch(`${api}/${id}`, {
-            method:  'PUT',
+            method:  'PATCH',
             headers: {
                 'Content-type': 'application/json'
             },
@@ -132,46 +140,46 @@ export default class MainFeed extends Component {
 
     }
 
-    async _doneAllTasks (doneStatus) {
+
+    _doneAllTasks (doneStatus) {
         const { tasks } = this.state;
 
-        console.log(doneStatus, 'done status');
+        const responseDone = () => {
+            tasks.forEach((item) => {
+                const { id, status } = item;
 
+                if (doneStatus === 'doneActive') {
 
-        const responseDone = await tasks.forEach((item) => {
-            const { id, priority, status, content } = item;
+                    if (status !== 'checked') {
 
-            if (doneStatus === 'doneActive') {
+                        this.completeTask(id);
+                    }
 
-                if (item.status !== 'checked') {
-
-                    this.completeTask(id, priority, status, content);
+                } else {
+                    console.log('doneDisable', item);
+                    this.unCompleteTask(id);
                 }
 
-            } else {
-                console.log('doneDisable', item);
-                this.unCompleteTask(id, priority, status, content);
-            }
+            });
 
-        });
 
-        setTimeout(responseDone, 1000);
+        };
+
+        setTimeout(responseDone, 800);
 
     }
 
-    async _completeTask (id, priority, status, content) {
+    async _completeTask (id) {
         const { api } = this.context;
 
         await fetch(`${api}/${id}`, {
-            method:  'PUT',
+            method:  'PATCH',
             headers: {
                 'Content-type': 'application/json'
             },
             body: JSON.stringify({
                 id,
-                priority,
-                status: 'checked',
-                content
+                status: 'checked'
             })
 
         });
@@ -181,19 +189,17 @@ export default class MainFeed extends Component {
     }
 
 
-    async _unCompleteTask (id, priority, status, content) {
+    async _unCompleteTask (id) {
         const { api } = this.context;
 
         await fetch(`${api}/${id}`, {
-            method:  'PUT',
+            method:  'PATCH',
             headers: {
                 'Content-type': 'application/json'
             },
             body: JSON.stringify({
                 id,
-                priority,
-                status: '',
-                content
+                status: ''
             })
 
         });
@@ -215,18 +221,32 @@ export default class MainFeed extends Component {
             noTasksMessages = '';
         }
 
-        const allTasks = tasks.map((item) => (
+        const pinnedTasks = tasks.map((pinned) => {
 
+            if (pinned.priority) {
+                return (<Task
+                    key = { pinned.id }
+                    { ...pinned }
+                    completeTask = { this.completeTask }
+                    editTask = { this.editTask }
+                    pinTask = { this.pinTask }
+                    removeTask = { this.removeTask }
+                    unCompleteTask = { this.unCompleteTask }
+                />);
+            }
+
+        });
+
+        const allTasks = tasks.map((item) => !item.priority ?
             <Task
                 key = { item.id }
                 { ...item }
                 completeTask = { this.completeTask }
                 editTask = { this.editTask }
+                pinTask = { this.pinTask }
                 removeTask = { this.removeTask }
                 unCompleteTask = { this.unCompleteTask }
-            />
-
-        ));
+            /> : '');
 
 
         return (
@@ -243,8 +263,12 @@ export default class MainFeed extends Component {
 
                 <section className = { Styles.MainFeed }>
 
+
                     <div className = { Styles.TaskList }>
+                        { pinnedTasks }
+
                         { allTasks }
+
                         { noTasksMessages }
                     </div>
 

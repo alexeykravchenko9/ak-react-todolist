@@ -10,6 +10,7 @@ export default class Task extends Component {
         id:             PropTypes.number.isRequired,
         completeTask:   PropTypes.func,
         editTask:       PropTypes.func,
+        pinTask:        PropTypes.func,
         priority:       PropTypes.bool,
         removeTask:     PropTypes.func,
         status:         PropTypes.string,
@@ -18,6 +19,7 @@ export default class Task extends Component {
 
     static defaultProps = {
         completeTask: '',
+        pinnedTask:   '',
         maxValueText: false
     };
 
@@ -28,6 +30,7 @@ export default class Task extends Component {
         this.handleRemoveTask = ::this._handleRemoveTask;
         this.handleEditTask = ::this._handleEditTask;
         this.handleEditingProcess = ::this._handleEditingProcess;
+        this.handlePinTask = ::this._handlePinTask;
     }
 
 
@@ -73,6 +76,19 @@ export default class Task extends Component {
 
             });
         }
+    }
+
+    _handlePinTask (event) {
+        event.preventDefault();
+
+        const { id, priority } = this.props;
+
+        if (!priority) {
+            this.props.pinTask(id, true);
+        } else {
+            this.props.pinTask(id, false);
+        }
+
     }
 
     _handleEditingProcess (event) {
@@ -159,6 +175,7 @@ export default class Task extends Component {
                         <button
                             className = { classes }
                             title = 'Pin'
+                            onClick = { this.handlePinTask }
                         />
 
                         <button
