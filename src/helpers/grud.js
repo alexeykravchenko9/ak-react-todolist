@@ -21,10 +21,6 @@ export const createTask = async ({ priority, status, content }, { api }) => {
         throw new Error('Failed to create new task');
     }
 
-    // const inArr = [];
-    // inArr.push(await response.json());
-
-
 };
 
 export const removeTask = async (id, { api }) => {
@@ -85,4 +81,3 @@ export const unCompleteTask = async (id, api) => {
 
     });
 };
-

@@ -97,7 +97,6 @@ export default class Composer extends Component {
         const { taskText, maxValueText } = this.state;
 
 
-
         let validationMessage = Styles.Validation;
         let emptyValidation = '';
 

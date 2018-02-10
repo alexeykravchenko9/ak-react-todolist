@@ -197,6 +197,8 @@ export default class MainFeed extends Component {
                 />);
             }
 
+            return '';
+
         });
 
         const allTasks = tasks.map((item) => !item.priority ?
