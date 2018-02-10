@@ -98,9 +98,27 @@ export default class MainFeed extends Component {
             sortedDESC.push(inCome[i]);
         }
 
+        const toLowerSearch = (content) => {
+
+            const matchArray = content.match(/\w/g);
+
+            return matchArray.join('').toLowerCase();
+
+        };
+
+
         if (searchKey) {
 
-            const searchArr = sortedDESC.filter((item) => item.content.indexOf(searchKey) !== -1 ? item : '');
+            const searchArr = sortedDESC.filter((item) => toLowerSearch(item.content).indexOf( toLowerSearch(searchKey) ) !== -1 ? item : '');
+
+
+            // const filteredArr = searchArr.map( (item) => {
+            //     const htmLed = item.content.replace(new RegExp(searchKey, "g"), (str) => `<strong>${str}</strong>`);
+            //     console.log( htmLed );
+            //     return item.content = htmLed;
+            // });
+
+
 
             searchArr.length === 0
                 ? this.setState({ tasksNotFound: true, tasks: []})
@@ -214,12 +232,13 @@ export default class MainFeed extends Component {
         const { tasks, tasksNotFound } = this.state;
         let noTasksMessages  = '';
 
-
         if (tasksNotFound) {
             noTasksMessages = <span className = { Styles.tasksNotFound } >{`There aren't any tasks of your request`}</span>;
         } else {
             noTasksMessages = '';
         }
+
+        console.log('text will replaced'.replace(/text/, '<b>777</b>' ) );
 
         const pinnedTasks = tasks.map((pinned) => {
 
