@@ -6,6 +6,7 @@ import PropTypes from 'prop-types';
 import SearchForm from '../SearchForm';
 import Task from '../Task';
 import Composer from '../Composer';
+import { createTask, removeTask, getTasks, editTask, completeTask, unCompleteTask } from '../../helpers/grud';
 
 // Styles
 import Styles from './styles';
@@ -42,40 +43,23 @@ export default class MainFeed extends Component {
 
     async _createTask (priority, status, content) {
         const { api } = this.context;
-        const dateId = new Date();
-        const obj = {
-            'id': dateId.getTime(),
-            priority,
-            status,
-            content
-        };
-        const response = await fetch(api,
-            {
-                method:  'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(obj)
-            }
-        );
 
-        if (response.status !== 201) {
-            throw new Error('Failed to create new task');
+        try {
+
+            await createTask(priority, status, content, { api });
+
+            await this.getTasks(this.state.searchQuery);
+
+        } catch ({ err }) {
+            console.log('_createTask', err);
         }
-
-        const inArr = [];
-
-        inArr.push(await response.json());
-
-        this.getTasks(this.state.searchQuery);
 
     }
 
     async _removeTask (id) {
         const { api } = this.context;
 
-        await fetch(`${api}/${id}`,
-            { method: 'DELETE' });
+        await removeTask(id, { api });
 
         this.setState(({ tasks }) => ({
             tasks: tasks.filter((item) => item.id !== id)
@@ -89,9 +73,9 @@ export default class MainFeed extends Component {
 
         this.setState({ searchQuery: searchKey });
 
-        const response = await fetch(api);
+        const data = await getTasks(api);
 
-        const inCome =  await response.json();
+        const inCome =  await data.json();
         const sortedDESC = [];
 
         for (let i = 0; i < inCome.length; i++) {
@@ -109,16 +93,7 @@ export default class MainFeed extends Component {
 
         if (searchKey) {
 
-            const searchArr = sortedDESC.filter((item) => toLowerSearch(item.content).indexOf( toLowerSearch(searchKey) ) !== -1 ? item : '');
-
-
-            // const filteredArr = searchArr.map( (item) => {
-            //     const htmLed = item.content.replace(new RegExp(searchKey, "g"), (str) => `<strong>${str}</strong>`);
-            //     console.log( htmLed );
-            //     return item.content = htmLed;
-            // });
-
-
+            const searchArr = sortedDESC.filter((item) => toLowerSearch(item.content).indexOf(toLowerSearch(searchKey)) !== -1 ? item : '');
 
             searchArr.length === 0
                 ? this.setState({ tasksNotFound: true, tasks: []})
@@ -134,25 +109,13 @@ export default class MainFeed extends Component {
 
         await this.editTask(id, priority);
 
-
     }
 
 
     async _editTask (id, priority, status, content) {
         const { api } = this.context;
 
-        await fetch(`${api}/${id}`, {
-            method:  'PATCH',
-            headers: {
-                'Content-type': 'application/json'
-            },
-            body: JSON.stringify({
-                id,
-                priority,
-                status,
-                content
-            })
-        });
+        await editTask({ id, priority, status, content }, { api });
 
         this.getTasks(this.state.searchQuery);
 
@@ -190,18 +153,8 @@ export default class MainFeed extends Component {
     async _completeTask (id) {
         const { api } = this.context;
 
-        await fetch(`${api}/${id}`, {
-            method:  'PATCH',
-            headers: {
-                'Content-type': 'application/json'
-            },
-            body: JSON.stringify({
-                id,
-                status: 'checked'
-            })
+        await completeTask(id, api);
 
-        });
-        console.log('completeTask has run');
         this.getTasks(this.state.searchQuery);
 
     }
@@ -210,17 +163,7 @@ export default class MainFeed extends Component {
     async _unCompleteTask (id) {
         const { api } = this.context;
 
-        await fetch(`${api}/${id}`, {
-            method:  'PATCH',
-            headers: {
-                'Content-type': 'application/json'
-            },
-            body: JSON.stringify({
-                id,
-                status: ''
-            })
-
-        });
+        await unCompleteTask(id, api);
 
         this.getTasks(this.state.searchQuery);
 
@@ -238,7 +181,7 @@ export default class MainFeed extends Component {
             noTasksMessages = '';
         }
 
-        console.log('text will replaced'.replace(/text/, '<b>777</b>' ) );
+        console.log('text will replaced'.replace(/text/, '<b>777</b>'));
 
         const pinnedTasks = tasks.map((pinned) => {
 
