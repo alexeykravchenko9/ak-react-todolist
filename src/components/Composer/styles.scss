@@ -20,6 +20,12 @@
         label{
             padding-top: 4px;
         }
+
+        @media screen and (max-width: 820px) {
+            width: 100%;
+        }
+
+
     }
 
     .container {
@@ -99,6 +105,11 @@
         vertical-align: top;
         text-align: right;
         position: relative;
+
+        @media screen and (max-width: 820px) {
+            width: 100%;
+        }
+
         input{
             outline: none;
             font-family: 'Poppins', sans-serif;
@@ -116,6 +127,12 @@
             &::-webkit-input-placeholder{
                 color: #aebcc0;
             }
+
+            @media screen and (max-width: 820px) {
+                width: 100%;
+                margin-bottom: 20px;
+            }
+
         }
 
         input[type="text"].emptyValidation{

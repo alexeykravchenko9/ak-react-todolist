@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-
+import { CSSTransition, Transition, TransitionGroup } from 'react-transition-group';
+// import Transition from 'react-transition-group/Transition';
+import TweenMax from 'gsap';
 
 // Instruments
 import SearchForm from '../SearchForm';
@@ -10,7 +12,6 @@ import { createTask, removeTask, getTasks, editTask, completeTask, unCompleteTas
 
 // Styles
 import Styles from './styles';
-
 
 export default class MainFeed extends Component {
     static contextTypes = {
@@ -28,13 +29,20 @@ export default class MainFeed extends Component {
         this.completeTask = ::this._completeTask;
         this.unCompleteTask = ::this._unCompleteTask;
         this.doneAllTasks = ::this._doneAllTasks;
+        this.enter = ::this._enter;
+        this.exit = ::this._exit;
+        this.pinnedEnter = ::this._pinnedEnter;
+        this.pinnedExit = ::this._pinnedExit;
+
+
     }
 
 
     state = {
         tasks:         [],
         tasksNotFound: false,
-        searchQuery:   ''
+        searchQuery:   '',
+        animationTask: true
     };
 
     async componentWillMount () {
@@ -46,7 +54,7 @@ export default class MainFeed extends Component {
 
         try {
 
-            await createTask(priority, status, content, { api });
+            await createTask({ priority, status, content }, { api });
 
             await this.getTasks(this.state.searchQuery);
 
@@ -66,6 +74,8 @@ export default class MainFeed extends Component {
         }));
 
         this.getTasks(this.state.searchQuery);
+
+
     }
 
     async _getTasks (searchKey) {
@@ -170,6 +180,30 @@ export default class MainFeed extends Component {
     }
 
 
+    _enter (el) {
+
+        TweenMax.fromTo(el, 0.3, { x: 0, y: -300, opacity: 0 }, { x: 0, y: 0, opacity: 1 });
+
+    }
+
+    _exit (el) {
+        TweenMax.fromTo(el, 0.3, { x: 0, y: 0, opacity: 1 }, { x: 0, y: 300, opacity: 0 });
+
+    }
+
+    _pinnedEnter (el) {
+
+        TweenMax.fromTo(el, 0.3, { x: 0, y: 300, opacity: 0 }, { x: 0, y: 0, opacity: 1 });
+
+    }
+
+    _pinnedExit (el) {
+
+        TweenMax.fromTo(el, 0.3, { x: 0, y: 0, opacity: 1 }, { x: 0, y: 300, opacity: 0 });
+
+    }
+
+
     // noinspection JSAnnotator
     render () {
         const { tasks, tasksNotFound } = this.state;
@@ -181,36 +215,68 @@ export default class MainFeed extends Component {
             noTasksMessages = '';
         }
 
-        console.log('text will replaced'.replace(/text/, '<b>777</b>'));
 
         const pinnedTasks = tasks.map((pinned) => {
 
             if (pinned.priority) {
-                return (<Task
-                    key = { pinned.id }
-                    { ...pinned }
-                    completeTask = { this.completeTask }
-                    editTask = { this.editTask }
-                    pinTask = { this.pinTask }
-                    removeTask = { this.removeTask }
-                    unCompleteTask = { this.unCompleteTask }
-                />);
+                return (
+                    <Transition
+                        key = { pinned.id }
+                        in
+                        appear
+                        timeout = { 0 }
+                        onEnter = { this.pinnedEnter }
+                        onExit = { this.pinnedExit }
+                    >
+
+                        <Task
+
+                            { ...pinned }
+                            completeTask = { this.completeTask }
+                            editTask = { this.editTask }
+                            pinTask = { this.pinTask }
+                            removeTask = { this.removeTask }
+                            unCompleteTask = { this.unCompleteTask }
+                        />
+
+                    </Transition>
+                );
             }
 
             return '';
 
         });
 
-        const allTasks = tasks.map((item) => !item.priority ?
-            <Task
-                key = { item.id }
-                { ...item }
-                completeTask = { this.completeTask }
-                editTask = { this.editTask }
-                pinTask = { this.pinTask }
-                removeTask = { this.removeTask }
-                unCompleteTask = { this.unCompleteTask }
-            /> : '');
+        const allTasks = tasks.map((item) => {
+
+
+            if (!item.priority) {
+
+
+                return (<Transition
+                    key = { item.id }
+                    in
+                    appear
+                    timeout = { 0 }
+                    onEnter = { this.enter }
+                    onExit = { this.exit } >
+                    <Task
+
+                        { ...item }
+                        completeTask = { this.completeTask }
+                        editTask = { this.editTask }
+                        pinTask = { this.pinTask }
+                        removeTask = { this.removeTask }
+                        unCompleteTask = { this.unCompleteTask }
+                    />
+
+                </Transition>);
+
+
+            }
+
+
+        });
 
 
         return (
@@ -232,6 +298,7 @@ export default class MainFeed extends Component {
                         { pinnedTasks }
 
                         { allTasks }
+
 
                         { noTasksMessages }
                     </div>

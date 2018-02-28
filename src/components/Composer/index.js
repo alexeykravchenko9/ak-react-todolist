@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { CSSTransition, Transition, TransitionGroup } from 'react-transition-group';
+import TweenMax from 'gsap';
 
 // Styles
 import Styles from './styles';
@@ -16,6 +18,7 @@ export default class Composer extends Component {
         this.handleWriteTask = ::this._handleWriteTask;
         this.handleFormAction = ::this._handleFormAction;
         this.handleDoneAll = ::this._handleDoneAll;
+        this.enterButton = ::this._enterButton;
     }
 
     state = {
@@ -92,6 +95,10 @@ export default class Composer extends Component {
         }
     }
 
+    _enterButton (el) {
+        TweenMax.fromTo(el, 1, { rotationX: 0 }, { rotationX: 360 });
+    }
+
 
     render () {
         const { taskText, maxValueText } = this.state;
@@ -130,7 +137,13 @@ export default class Composer extends Component {
                         onChange = { this.handleWriteTask }
                     />
                     <span className = { validationMessage } >Max length 30 characters</span>
-                    <input type = 'submit' value = { 'Add Task' } />
+                    <Transition
+                        in
+                        appear
+                        onEnter = { this.enterButton }
+                        timeout = { 100 }>
+                        <input type = 'submit' value = { 'Add Task' } />
+                    </Transition>
                 </form>
 
 

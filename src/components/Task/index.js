@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-
+import Transition from 'react-transition-group/Transition';
+import { TimelineLite, TweenLite } from 'gsap';
 
 import Styles from './styles';
 
@@ -23,6 +24,7 @@ export default class Task extends Component {
         maxValueText: false
     };
 
+
     constructor () {
         super();
 
@@ -31,6 +33,7 @@ export default class Task extends Component {
         this.handleEditTask = ::this._handleEditTask;
         this.handleEditingProcess = ::this._handleEditingProcess;
         this.handlePinTask = ::this._handlePinTask;
+
     }
 
 
@@ -146,54 +149,52 @@ export default class Task extends Component {
             validationMessage = [Styles.Validation, Styles.Show].join(' ');
         }
 
-        return (
-            <section className = { Styles.Task }>
-                <form className = { classComl } >
+        return (<section className = { Styles.Task }>
+            <form className = { classComl } >
 
-                    <label className = { Styles.container } htmlFor = { id } >
-                        <input
-                            checked = { status }
-                            id = { id }
-                            type = 'checkbox'
-                            onChange = { this.handleChangeCompleted }
-                        />
-                        <span className = { Styles.checkmark } />
-                    </label>
+                <label className = { Styles.container } htmlFor = { id } >
+                    <input
+                        checked = { status }
+                        id = { id }
+                        type = 'checkbox'
+                        onChange = { this.handleChangeCompleted }
+                    />
+                    <span className = { Styles.checkmark } />
+                </label>
 
-                    <div className = { Styles.TaskText } >
-                        <div className = { contentNone } >{ content }</div>
-                        <textarea
-                            className = { editingClass }
-                            id = ''
-                            name = 'taskText'
-                            value = { contentState }
-                            onChange = { this.handleEditingProcess }
-                        />
-                        <span className = { validationMessage } >Max length 30 characters</span>
-                    </div>
-                    <div className = { Styles.buttonArea }>
-                        <button
-                            className = { classes }
-                            title = 'Pin'
-                            onClick = { this.handlePinTask }
-                        />
+                <div className = { Styles.TaskText } >
+                    <div className = { contentNone } >{ content }</div>
+                    <textarea
+                        className = { editingClass }
+                        id = ''
+                        name = 'taskText'
+                        value = { contentState }
+                        onChange = { this.handleEditingProcess }
+                    />
+                    <span className = { validationMessage } >Max length 30 characters</span>
+                </div>
+                <div className = { Styles.buttonArea }>
+                    <button
+                        className = { classes }
+                        title = 'Pin'
+                        onClick = { this.handlePinTask }
+                    />
 
-                        <button
-                            className = { Styles.buttonArea__edit }
-                            title = 'Edit'
-                            onClick = { this.handleEditTask }
-                        />
+                    <button
+                        className = { Styles.buttonArea__edit }
+                        title = 'Edit'
+                        onClick = { this.handleEditTask }
+                    />
 
-                        <button
-                            className = { Styles.buttonArea__remove }
-                            title = 'Remove'
-                            onClick = { this.handleRemoveTask }
-                        />
+                    <button
+                        className = { Styles.buttonArea__remove }
+                        title = 'Remove'
+                        onClick = { this.handleRemoveTask }
+                    />
 
-                    </div>
+                </div>
 
-                </form>
-            </section>
-        );
+            </form>
+        </section>);
     }
 }
