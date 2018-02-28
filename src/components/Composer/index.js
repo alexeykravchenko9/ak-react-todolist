@@ -102,7 +102,7 @@ export default class Composer extends Component {
 
     render () {
         const { taskText, maxValueText } = this.state;
-
+        console.log('Our composter test build');
 
         let validationMessage = Styles.Validation;
         let emptyValidation = '';
