@@ -1,34 +1,34 @@
 # TODO-List of Lectrum React Homework 
 
-## based on Lectrum React intensive boilerplate
+##### based on Lectrum React intensive boilerplate
 
 
-## Install guides: 
+## Description: 
 
-1) Clone/Download project to the your directory
+Todo list app works was build on ReactJS and using all modern technologies. 
 
-2) Go to the directory of project ( Command Line )
+[Demo](http://alexey-kravchenko.com/todolist/)
 
-3) $ npm install
+### Stack: 
 
-4) $ npm run start
+#### Frontend:
+- ReactJS 
+- JS ES2015, ES6
+- GRUD 
+- GSAP animations
+- SCSS
+- Webpack
 
-App use managing of Tasks via RESTful technology and placed on the remote JSON placeholder server. 
+#### Backend:
+[JSON Placeholder](https://jsonplaceholder.typicode.com) deployed with subdomain on DigitalOcean
+Data keeps in JSON file.
 
-You must be intall before using on the your local machine. 
 
-## Install JSON:
 
-5) $ npm install -g json-server   
+## App Functions:
 
-6) Go to the directory (via CMD) /src and you could find db.json file which keep data of all tasks. 
+- Add/Edit/Remove tasks
+- Make status Priority for task and task will attached above in the list
+- Search tasks 
+- Done All button to complete all tasks
 
-7) Run server:
-
-$ json-server --watch db.json --port 3006
-
-(If you choose another port, you should change GlobalOptions value in the /containers/TodoApp/index.js
-
-const globalOptions = {
-    api: 'http://localhost:3006/tasks'
-}
