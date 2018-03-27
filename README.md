@@ -13,8 +13,7 @@ Todo list app works was build on ReactJS and using all modern technologies.
 
 #### Frontend:
 - ReactJS 
-- JS ES2015, ES6
-- GRUD 
+- JS ES2015, ES7 
 - GSAP animations
 - SCSS
 - Webpack
